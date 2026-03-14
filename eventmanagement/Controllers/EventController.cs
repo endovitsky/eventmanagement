@@ -1,7 +1,6 @@
 ﻿using eventmanagement.Controllers.DtoModels;
 using eventmanagement.Interfaces;
 using eventmanagement.Services.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace eventmanagement.Controllers
@@ -10,7 +9,7 @@ namespace eventmanagement.Controllers
     /// Контроллер событий.
     /// </summary>
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/events")]
     public class EventController : ControllerBase
     {
         private readonly IEventService _eventService;
@@ -37,7 +36,7 @@ namespace eventmanagement.Controllers
             var result = _eventService.GetById(id);
             if(result == null)
             {
-                var notFoundMsg = $"Не найдно событие {id}.";
+                var notFoundMsg = $"Не найдено событие {id}.";
                 _logger.LogError(notFoundMsg);
 
                 return NotFound(notFoundMsg);
