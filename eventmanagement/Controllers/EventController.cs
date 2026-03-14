@@ -1,5 +1,7 @@
-﻿using eventmanagement.Interfaces;
+﻿using eventmanagement.Controllers.DtoModels;
+using eventmanagement.Interfaces;
 using eventmanagement.Services.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace eventmanagement.Controllers
@@ -28,12 +30,21 @@ namespace eventmanagement.Controllers
         /// <param name="id">Id события.</param>
         /// <returns>Событие с указанным Id.</returns>
         [HttpGet("{id}")]
-        public ActionResult<List<Event>> GetById(Guid id)
+        public ActionResult<Event> GetById(Guid id)
         {
             _logger.LogInformation($"Получение события {id}");
-            var result = _eventService.GetById(id);
-            _logger.LogInformation($"Результат: {result}");
 
+            var result = _eventService.GetById(id);
+            if(result == null)
+            {
+                var notFoundMsg = $"Не найдно событие {id}.";
+                _logger.LogError(notFoundMsg);
+
+                return NotFound(notFoundMsg);
+            }
+
+            _logger.LogInformation($"Найдено событие {result}.");
+            
             return Ok(result);
         }
 
@@ -51,25 +62,57 @@ namespace eventmanagement.Controllers
         /// <summary>
         /// Создать новое событие.
         /// </summary>
-        /// <param name="event">Данные события.</param>
+        /// <param name="eventDto">Данные события.</param>
         /// <returns>Созданное событие.</returns>
         [HttpPost]
-        public ActionResult<Guid> Create([FromBody] Event @event)
+        public ActionResult<Guid> Create([FromBody] EventDto eventDto)
         {
-            var createdId = _eventService.Create(@event);
-            return CreatedAtAction(nameof(GetById), new { id = createdId }, @event);
+            if(!TryValidateModel(eventDto))
+            {
+                return BadRequest(ModelState);
+            }
+
+            var eventToCreate = new Event
+            {
+                Title = eventDto.Title,
+                Description = eventDto.Description,
+                StartAt = eventDto.StartAt,
+                EndAt = eventDto.EndAt
+            };
+
+            var createdId = _eventService.Create(eventToCreate);
+            return CreatedAtAction(nameof(GetById), new { id = createdId }, eventDto);
         }
 
         /// <summary>
         /// Обновить существующее событие.
         /// </summary>
         /// <param name="id">Id события.</param>
-        /// <param name="event">Новые данные события.</param>
+        /// <param name="eventDto">Новые данные события.</param>
         /// <returns>Обновлённое событие.</returns>
         [HttpPut("{id}")]
-        public ActionResult<Guid> Update(int id, [FromBody] Event @event)
+        public ActionResult<Guid> Update(Guid id, [FromBody] EventDto eventDto)
         {
-            return Ok(_eventService.Update(@event));
+            if(!TryValidateModel(eventDto))
+            {
+                return BadRequest(ModelState);
+            }
+
+            var @event = new Event
+            {
+                Title = eventDto.Title,
+                Description = eventDto.Description,
+                StartAt = eventDto.StartAt,
+                EndAt = eventDto.EndAt
+            };
+
+            var result = _eventService.Update(id, @event);
+            if(result == null)
+            {
+                return NotFound($"Не найдено событие {id}.");
+            }
+
+            return Ok(result);
         }
 
         /// <summary>
@@ -80,7 +123,12 @@ namespace eventmanagement.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(Guid id)
         {
-            _eventService.Delete(id);
+            var result = _eventService.Delete(id);
+            if(result == null)
+            {
+                return NotFound($"Не найдено событие {id}.");
+            }
+
             return NoContent();
         }
     }

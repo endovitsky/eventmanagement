@@ -7,7 +7,7 @@ namespace eventmanagement.Interfaces
         Event? GetById(Guid id);
         IEnumerable<Event> GetAll();
         Guid Create(Event @event);
-        Event Update(Event @event);
-        Guid Delete(Guid id);
+        Event? Update(Guid Id, Event @event);
+        Guid? Delete(Guid id);
     }
 }

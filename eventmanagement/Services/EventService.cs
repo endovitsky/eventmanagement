@@ -5,63 +5,51 @@ namespace eventmanagement.Services
 {
     public class EventService : IEventService
     {
-        private List<Event> _events =
-        [
-            new Event
-            {
-                Id = Guid.NewGuid(),
-                Title = "Test event title 1",
-                Description = "Test event description 1",
-                StartAt = DateTime.Now.AddDays(14),
-                EndAt = DateTime.Now.AddDays(15)
-            }
-        ];
-
         public Guid Create(Event @event)
         {
             @event.Id = Guid.NewGuid();
-            _events.Add(@event);
+            TestData.Data.Add(@event);
 
             return @event.Id;
         }
 
-        public Guid Delete(Guid id)
+        public Guid? Delete(Guid id)
         {
-            var @event = _events.FirstOrDefault(x => x.Id == id);
-            if (@event == null)
+            var eventToDelete = TestData.Data.FirstOrDefault(x => x.Id == id);
+            if (eventToDelete == null)
             {
-                throw new ArgumentException($"Не найдено событие {id}.");
+                return null;
             }
 
-            _events.Remove(@event);
+            TestData.Data.Remove(eventToDelete);
 
-            return @event.Id;
+            return eventToDelete.Id;
         }
 
         public IEnumerable<Event> GetAll()
         {
-            return _events;
+            return TestData.Data;
         }
 
         public Event? GetById(Guid id)
         {
-            return _events.FirstOrDefault(x => x.Id == id);
+            return TestData.Data.FirstOrDefault(x => x.Id == id);
         }
 
-        public Event Update(Event @event)
+        public Event? Update(Guid id, Event @event)
         {
-            var currentEvent = _events.FirstOrDefault(x => x.Id == @event.Id);
-            if(currentEvent == null)
+            var eventToUpdate = TestData.Data.FirstOrDefault(x => x.Id == id);
+            if(eventToUpdate == null)
             {
-                throw new ArgumentException($"Не найдено событие {@event.Id}.");
+                return null;
             }
 
-            currentEvent.Title = @event.Title;
-            currentEvent.Description = @event.Description;
-            currentEvent.StartAt = @event.StartAt;
-            currentEvent.EndAt = @event.EndAt;
+            eventToUpdate.Title = @event.Title;
+            eventToUpdate.Description = @event.Description;
+            eventToUpdate.StartAt = @event.StartAt;
+            eventToUpdate.EndAt = @event.EndAt;
 
-            return currentEvent;
+            return eventToUpdate;
         }
     }
 }
