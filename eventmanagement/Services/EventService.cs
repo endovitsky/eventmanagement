@@ -10,10 +10,10 @@ namespace eventmanagement.Services
             new Event
             {
                 Id = Guid.NewGuid(),
-                Title = "Test",
-                Description = "Test",
-                StartAt = DateTime.Now,
-                EndAt = DateTime.Now
+                Title = "Test event title 1",
+                Description = "Test event description 1",
+                StartAt = DateTime.Now.AddDays(14),
+                EndAt = DateTime.Now.AddDays(15)
             }
         ];
 
