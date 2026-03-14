@@ -1,4 +1,4 @@
-﻿using eventmanagement.Models;
+﻿using eventmanagement.Services.Models;
 
 namespace eventmanagement.Interfaces
 {
@@ -6,7 +6,7 @@ namespace eventmanagement.Interfaces
     {
         Event? GetById(Guid id);
         IEnumerable<Event> GetAll();
-        Guid Add(Event @event);
+        Guid Create(Event @event);
         Event Update(Event @event);
         Guid Delete(Guid id);
     }

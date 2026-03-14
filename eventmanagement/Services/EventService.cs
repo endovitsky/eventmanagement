@@ -1,5 +1,5 @@
 ﻿using eventmanagement.Interfaces;
-using eventmanagement.Models;
+using eventmanagement.Services.Models;
 
 namespace eventmanagement.Services
 {
@@ -17,7 +17,7 @@ namespace eventmanagement.Services
             }
         ];
 
-        public Guid Add(Event @event)
+        public Guid Create(Event @event)
         {
             @event.Id = Guid.NewGuid();
             _events.Add(@event);
