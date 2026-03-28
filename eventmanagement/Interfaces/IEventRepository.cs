@@ -6,6 +6,6 @@ namespace eventmanagement.Interfaces
     {
         public IEnumerable<Event> GetAll();
         public Event GetById(Guid id);
-        public void Add(Event @event);
+        public Guid Add(Event @event);
     }
 }

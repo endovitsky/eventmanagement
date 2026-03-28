@@ -6,18 +6,20 @@ namespace eventmanagement.Services
     public class EventService : IEventService
     {
         private readonly IEventRepository _eventRepository;
+        private readonly IGuidGeneratorService _guidGeneratorService;
 
-        public EventService(IEventRepository eventRepository)
+        public EventService(IEventRepository eventRepository,
+            IGuidGeneratorService guidGeneratorService)
         {
             _eventRepository = eventRepository;
+            _guidGeneratorService = guidGeneratorService;
         }
 
         public Guid Create(Event @event)
         {
-            @event.Id = Guid.NewGuid();
-            _eventRepository.Add(@event);
-
-            return @event.Id;
+            @event.Id = _guidGeneratorService.Generate();
+            var result = _eventRepository.Add(@event);
+            return result;
         }
 
         public Guid? Delete(Guid id)

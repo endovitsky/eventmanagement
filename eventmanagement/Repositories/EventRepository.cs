@@ -6,9 +6,10 @@ namespace eventmanagement.Repositories
 {
     public class EventRepository : IEventRepository
     {
-        public void Add(Event @event)
+        public Guid Add(Event @event)
         {
             TestData.Data.Add(@event);
+            return @event.Id;
         }
 
         public IEnumerable<Event> GetAll()
