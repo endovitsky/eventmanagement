@@ -5,17 +5,24 @@ namespace eventmanagement.Services
 {
     public class EventService : IEventService
     {
+        private readonly IEventRepository _eventRepository;
+
+        public EventService(IEventRepository eventRepository)
+        {
+            _eventRepository = eventRepository;
+        }
+
         public Guid Create(Event @event)
         {
             @event.Id = Guid.NewGuid();
-            TestData.Data.Add(@event);
+            _eventRepository.Add(@event);
 
             return @event.Id;
         }
 
         public Guid? Delete(Guid id)
         {
-            var eventToDelete = TestData.Data.FirstOrDefault(x => x.Id == id);
+            var eventToDelete = _eventRepository.GetById(id);
             if (eventToDelete == null)
             {
                 return null;
@@ -28,7 +35,7 @@ namespace eventmanagement.Services
 
         public PaginatedResult<Event> Get(EventFilter eventFilter)
         {
-            var events = TestData.Data.Where(x => x.StartAt >= DateTime.Now);
+            var events = _eventRepository.GetAll().Where(x => x.StartAt >= DateTime.Now);
 
             if(!string.IsNullOrEmpty(eventFilter.Title))
             {
@@ -60,12 +67,12 @@ namespace eventmanagement.Services
 
         public Event? GetById(Guid id)
         {
-            return TestData.Data.FirstOrDefault(x => x.Id == id);
+            return _eventRepository.GetById(id);
         }
 
         public Event? Update(Guid id, Event @event)
         {
-            var eventToUpdate = TestData.Data.FirstOrDefault(x => x.Id == id);
+            var eventToUpdate = _eventRepository.GetById(id);
             if(eventToUpdate == null)
             {
                 return null;

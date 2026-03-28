@@ -1,10 +1,12 @@
 using eventmanagement.Interfaces;
+using eventmanagement.Repositories;
 using eventmanagement.Services;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<IEventService, EventService>();
 
 builder.Services.AddControllers();
