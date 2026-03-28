@@ -26,17 +26,36 @@ namespace eventmanagement.Services
             return eventToDelete.Id;
         }
 
-        public PaginatedResult<Event> Get(int pageNumber, int pageSize)
+        public PaginatedResult<Event> Get(EventFilter eventFilter)
         {
-            var events = TestData.Data
+            var events = TestData.Data.Where(x => x.StartAt >= DateTime.Now);
+
+            if(!string.IsNullOrEmpty(eventFilter.Title))
+            {
+                events = events.Where(x => x.Title.ToLower().Contains(eventFilter.Title.ToLower()));
+            }
+
+            if(eventFilter.From.HasValue)
+            {
+                events = events.Where(x => x.StartAt >= eventFilter.From.Value);
+            }
+
+            if(eventFilter.To.HasValue)
+            {
+                events = events.Where(x => x.EndAt <= eventFilter.To.Value);
+            }
+
+            var filteredCount = events.Count();
+
+            var result = events
                 .OrderByDescending(c => c.StartAt)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
+                .Skip((eventFilter.PageNumber - 1) * eventFilter.PageSize)
+                .Take(eventFilter.PageSize)
                 .ToList();
 
-            int totalPages = (int)Math.Ceiling((double)events.Count / pageSize);
+            int totalPages = (int)Math.Ceiling((double)filteredCount / eventFilter.PageSize);
 
-            return new PaginatedResult<Event>(events, pageNumber, totalPages, events.Count);
+            return new PaginatedResult<Event>(result, eventFilter.PageNumber, totalPages, filteredCount);
         }
 
         public Event? GetById(Guid id)
