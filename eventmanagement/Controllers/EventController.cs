@@ -48,13 +48,15 @@ namespace eventmanagement.Controllers
         }
 
         /// <summary>
-        /// Получить все события.
+        /// Получить события.
         /// </summary>
-        /// <returns>Список всех событий.</returns>
+        /// <param name="pageNumber">Номер страницы.</param>
+        /// <param name="pageSize">Размер записей на одной странице.</param>
+        /// <returns>Список событий.</returns>
         [HttpGet]
-        public ActionResult<List<Event>> GetAll()
+        public ActionResult<PaginatedResult<Event>> Get(int pageNumber, int pageSize)
         {
-            var result = _eventService.GetAll();
+            var result = _eventService.Get(pageNumber, pageSize);
             return Ok(result);
         }
 

@@ -26,9 +26,17 @@ namespace eventmanagement.Services
             return eventToDelete.Id;
         }
 
-        public IEnumerable<Event> GetAll()
+        public PaginatedResult<Event> Get(int pageNumber, int pageSize)
         {
-            return TestData.Data;
+            var events = TestData.Data
+                .OrderByDescending(c => c.StartAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            int totalPages = (int)Math.Ceiling((double)events.Count / pageSize);
+
+            return new PaginatedResult<Event>(events, pageNumber, totalPages, events.Count);
         }
 
         public Event? GetById(Guid id)
